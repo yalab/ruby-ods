@@ -50,4 +50,11 @@ class OdsTest < Test::Unit::TestCase
     modified_ods = Ods.new(@file_path)
     assert_equal modified_text, modified_ods.sheets[sheet_offset][row, col]
   end
+
+  def test_access_not_existed_sheet
+    ods_length = @ods.sheets.length
+    new_sheet = @ods.create_sheet
+    assert_equal "Sheet#{ods_length+1}", new_sheet.name
+    assert_equal '', new_sheet[1, :A]
+  end
 end

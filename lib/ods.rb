@@ -17,6 +17,7 @@ class Ods
     @content.root.get_elements(XPATH_SHEETS).each do |sheet|
       @sheets.push(Sheet.new(sheet))
     end
+    @content
   end
 
   def save(dest=nil)
@@ -33,7 +34,18 @@ class Ods
     end
   end
 
+  def create_sheet
+    clone_source = @sheets[0].content
+    clone = clone_source.clone
+    clone_source.parent.add_element(clone)
+    new_sheet = Sheet.new(clone)
+    new_sheet.name = "Sheet#{@sheets.length + 1}"
+    @sheets.push(new_sheet)
+    new_sheet
+  end
+
   class Sheet
+    attr_reader :content
     def initialize(content)
       @content = content
     end
@@ -48,6 +60,7 @@ class Ods
 
     def text_node(row, col)
       row = @content.get_elements('table:table-row')[row-1]
+      return nil unless row
       column = row.get_elements('table:table-cell')[('A'..col.to_s).to_a.index(col.to_s)]
       column.get_elements('text:p').first.get_text
     end
