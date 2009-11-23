@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 require 'rexml/document'
 require 'rubygems'
 require 'zip/zip'
@@ -43,6 +44,20 @@ class Ods
 
     def name=(name)
       @content.add_attribute('table:name', name)
+    end
+
+    def text_node(row, col)
+      row = @content.get_elements('table:table-row')[row-1]
+      column = row.get_elements('table:table-cell')[('A'..col.to_s).to_a.index(col.to_s)]
+      column.get_elements('text:p').first.get_text
+    end
+
+    def [](row, col)
+      text_node(row, col).to_s
+    end
+
+    def []=(row, col, value)
+      text_node(row, col).value = value
     end
   end
 end
