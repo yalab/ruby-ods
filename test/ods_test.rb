@@ -56,5 +56,6 @@ class OdsTest < Test::Unit::TestCase
     new_sheet = @ods.create_sheet
     assert_equal "Sheet#{ods_length+1}", new_sheet.name
     assert_equal '', new_sheet[1, :A]
+    assert_nothing_raised { new_sheet[100, :CC] = '' }
   end
 end

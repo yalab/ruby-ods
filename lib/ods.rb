@@ -70,7 +70,8 @@ class Ods
     end
 
     def []=(row, col, value)
-      text_node(row, col).value = value
+      return unless node = text_node(row, col)
+      node.value = value
     end
   end
 end
