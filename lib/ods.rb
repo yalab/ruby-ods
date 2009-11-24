@@ -35,11 +35,12 @@ class Ods
   end
 
   def create_sheet
-    clone_source = @sheets[0].content
-    clone = clone_source.clone
-    clone_source.parent.add_element(clone)
-    new_sheet = Sheet.new(clone)
-    new_sheet.name = "Sheet#{@sheets.length + 1}"
+    parent = @content.root.get_elements(XPATH_SHEETS.split('/')[0..-2].join('/'))[0]
+    table = parent.add_element('table:table',
+                               'table:name'       => "Sheet#{@sheets.length + 1}",
+                               'table:style-name' => "ta1",
+                               'table:print'      => "false")
+    new_sheet = Sheet.new(table)
     @sheets.push(new_sheet)
     new_sheet
   end
