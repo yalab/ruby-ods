@@ -38,8 +38,12 @@ class Ods
     parent = @content.root.get_elements(XPATH_SHEETS.split('/')[0..-2].join('/'))[0]
     table = parent.add_element('table:table',
                                'table:name'       => "Sheet#{@sheets.length + 1}",
-                               'table:style-name' => "ta1",
-                               'table:print'      => "false")
+                               'table:style-name' => 'ta1',
+                               'table:print'      => 'false')
+    table.add_element('table:table-column',
+                      'table:style-name'              => 'co1',
+                      'table:number-columns-repeated' => '2',
+                      'table:default-cell-style-name' => 'Default')
     new_sheet = Sheet.new(table)
     @sheets.push(new_sheet)
     new_sheet
@@ -60,10 +64,25 @@ class Ods
     end
 
     def text_node(row, col)
-      row = @content.get_elements('table:table-row')[row-1]
-      return nil unless row
-      column = row.get_elements('table:table-cell')[('A'..col.to_s).to_a.index(col.to_s)]
-      column.get_elements('text:p').first.get_text
+      rows = @content.get_elements('table:table-row')
+      (row - rows.length).times do
+        rows.push @content.add_element('table:table-row',
+                                       'table:style-name' => 'ro1')
+      end
+      row = rows[row-1]
+
+      col = ('A'..col.to_s).to_a.index(col.to_s)
+      cols = row.get_elements('table:table-cell')
+      (col - cols.length + 1).times do
+        cols.push row.add_element('table:table-cell', 'office:value-type' => 'string')
+      end
+      column = cols[col]
+
+      unless cell = column.get_elements('text:p').first
+        cell = column.add_element('text:p')
+        cell.add_text('')
+      end
+      cell.get_text
     end
 
     def [](row, col)
@@ -71,8 +90,7 @@ class Ods
     end
 
     def []=(row, col, value)
-      return unless node = text_node(row, col)
-      node.value = value
+      text_node(row, col).value = value
     end
   end
 end
