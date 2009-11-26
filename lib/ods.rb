@@ -211,7 +211,7 @@ class Ods
     end
 
     def set_attr(name, value)
-      @content['number-columns-' + name] = value.to_s
+      @content['table:number-columns-' + name] = value.to_s
     end
   end
 end
