@@ -141,5 +141,9 @@ class Ods
     def text=(value)
       text_p.content = value
     end
+
+    def annotation
+      @content.xpath('office:annotation/text:p').first.content
+    end
   end
 end

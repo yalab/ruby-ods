@@ -60,4 +60,9 @@ class OdsTest < Test::Unit::TestCase
     assert_nothing_raised { new_sheet[col, row].text = 'hoge' }
     assert_equal 'hoge', new_sheet[col, row].text
   end
+
+  def test_read_annotation
+    cell = @ods.sheets[0][2, :A]
+    assert_equal '昆布だし', cell.annotation
+  end
 end
