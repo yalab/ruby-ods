@@ -142,26 +142,25 @@ class Ods
       @content = content
     end
 
-    def text_p
-      @content.xpath('text:p').first || @content.add_element('text:p')
-    end
-
     def text
-      text_p.content
+      fetch('text:p').content
     end
 
     def text=(value)
-      text_p.content = value
+      fetch('text:p').content = value
     end
 
     def annotation
-      node = @content.xpath('office:annotation/text:p').first
-      (node) ? node.content : ''
+      fetch('office:annotation/text:p').content
     end
 
     def annotation=(value)
-      node = @content.fetch('office:annotation/text:p')
-      node.content = value
+      fetch('office:annotation/text:p').content = value
+    end
+
+    private
+    def fetch(xpath)
+      @content.fetch(xpath)
     end
   end
 end
