@@ -109,7 +109,7 @@ class Ods
       @content.set_attribute('table:name', name)
     end
 
-    def text_node(row, col)
+    def [](row, col)
       rows = @content.xpath('./table:table-row').to_a
       (row - rows.length).times do
         rows.push @content.add_element('table:table-row',
@@ -121,20 +121,25 @@ class Ods
       (col - cols.length + 1).times do
         cols.push row.add_element('table:table-cell', 'office:value-type' => 'string')
       end
-      column = cols[col]
-      unless cell = column.xpath('text:p').first
-        cell = column.add_element('text:p')
-        cell.content = ''
-      end
-      cell
+      Cell.new(cols[col])
+    end
+  end
+
+  class Cell
+    def initialize(content)
+      @content = content
     end
 
-    def [](row, col)
-      text_node(row, col).content
+    def text_p
+      @content.xpath('text:p').first || @content.add_element('text:p')
     end
 
-    def []=(row, col, value)
-      text_node(row, col).content = value
+    def text
+      text_p.content
+    end
+
+    def text=(value)
+      text_p.content = value
     end
   end
 end

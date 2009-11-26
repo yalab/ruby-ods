@@ -34,8 +34,8 @@ class OdsTest < Test::Unit::TestCase
 
   def test_get_column
     sheet = @ods.sheets[0]
-    assert_equal 'だし汁', sheet[2, :A]
-    assert_equal '適量', sheet[6, :B]
+    assert_equal 'だし汁', sheet[2, :A].text
+    assert_equal '適量', sheet[6, :B].text
   end
 
   def test_modify_column
@@ -44,20 +44,20 @@ class OdsTest < Test::Unit::TestCase
     col = :B
     sheet = @ods.sheets[sheet_offset]
     modified_text = '酢味噌'
-    assert_not_equal modified_text, sheet[row, col]
-    sheet[row, col] = modified_text
+    assert_not_equal modified_text, sheet[row, col].text
+    sheet[row, col].text = modified_text
     @ods.save(@file_path)
     modified_ods = Ods.new(@file_path)
-    assert_equal modified_text, modified_ods.sheets[sheet_offset][row, col]
+    assert_equal modified_text, modified_ods.sheets[sheet_offset][row, col].text
   end
 
   def test_access_not_existed_sheet
     ods_length = @ods.sheets.length
     new_sheet = @ods.create_sheet
     assert_equal "Sheet#{ods_length+1}", new_sheet.name
-    assert_equal '', new_sheet[1, :A]
+    assert_equal '', new_sheet[1, :A].text
     (col, row) = [100, :CC]
-    assert_nothing_raised { new_sheet[col, row] = 'hoge' }
-    assert_equal 'hoge', new_sheet[col, row]
+    assert_nothing_raised { new_sheet[col, row].text = 'hoge' }
+    assert_equal 'hoge', new_sheet[col, row].text
   end
 end
