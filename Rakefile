@@ -7,5 +7,6 @@ Jeweler::Tasks.new do |gemspec|
   gemspec.description = ""
   gemspec.authors = ["yalab"]
   gemspec.add_dependency "nokogiri", ">= 1.4.0"
+  gemspec.add_dependency "rubyzip", ">= 0.9.1"
 end
 
