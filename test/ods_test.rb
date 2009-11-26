@@ -76,4 +76,16 @@ class OdsTest < Test::Unit::TestCase
     cell.annotation = text
     assert_equal text, @ods.sheets[sheet_offset][row, col].annotation
   end
+
+  def test_columns_repeated
+    sheet = @ods.create_sheet
+    row = 10
+    col = :C
+    sheet[row, col].text = 'hoge'
+    @ods.save(@file_path)
+
+    modified_ods = Ods.new(@file_path)
+    sheet = modified_ods.sheets[modified_ods.sheets.length-1]
+    assert_equal "3", sheet.column.attr('repeated')
+  end
 end

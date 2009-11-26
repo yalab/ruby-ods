@@ -85,6 +85,16 @@ class Ods
       dest = @path
     end
 
+    @sheets.each do |sheet|
+      column = sheet.column
+      max_length = 0
+      column.content.parent.xpath('table:table-row').each do |row|
+        length = row.xpath('table:table-cell').length
+        max_length = length if max_length < length
+      end
+      column.set_attr('repeated', max_length)
+    end
+
     Zip::ZipFile.open(dest) do |zip|
       zip.get_output_stream('content.xml') do |io|
         io << @content.to_s
@@ -100,7 +110,7 @@ class Ods
                                'print'      => 'false')
     table.add_element('table:table-column',
                       'style-name'              => 'co1',
-                      'number-columns-repeated' => '2',
+                      'number-columns-repeated' => '1',
                       'default-cell-style-name' => 'Default')
     new_sheet = Sheet.new(table)
     @sheets.push(new_sheet)
@@ -135,6 +145,10 @@ class Ods
       end
       Cell.new(cols[col])
     end
+
+    def column
+      Column.new(@content.xpath('table:table-column').first)
+    end
   end
 
   class Cell
@@ -161,6 +175,21 @@ class Ods
     private
     def fetch(xpath)
       @content.fetch(xpath)
+    end
+  end
+
+  class Column
+    attr_reader :content
+    def initialize(content)
+      @content = content
+    end
+
+    def attr(name)
+      @content['number-columns-' + name]
+    end
+
+    def set_attr(name, value)
+      @content['number-columns-' + name] = value.to_s
     end
   end
 end
