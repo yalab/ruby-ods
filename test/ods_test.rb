@@ -89,16 +89,23 @@ class OdsTest < Test::Unit::TestCase
     assert_equal "3", sheet.column.attr('repeated')
   end
 
-  def test_each_rows
+  def test_each_rows_and_cols
     sheet = @ods.create_sheet
-    rows = 10
-    cols = :A
-    sheet[rows, cols].text = 'foo'
-
+    row_offset = 10
+    col_offset = :C
+    sheet[row_offset, col_offset].text = 'foo'
     count = 0
     sheet.rows.each do |row|
       count += 1
     end
-    assert_equal rows, count
+    assert_instance_of Ods::Row, sheet.rows[0]
+    assert_equal row_offset, count
+
+    count = 0
+    sheet.rows[row_offset-1].cols.each do |col|
+      count += 1
+    end
+    assert_instance_of Ods::Cell, sheet.rows[row_offset-1].cols[0]
+    assert_equal ('A'..col_offset.to_s).to_a.length, count
   end
 end

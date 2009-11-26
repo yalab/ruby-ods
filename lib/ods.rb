@@ -134,20 +134,20 @@ class Ods
 
     def [](row, col)
       (row - rows.length).times do
-        rows.push @content.add_element('table:table-row',
-                                       'table:style-name' => 'ro1')
+        rows.push Row.new(@content.add_element('table:table-row',
+                                               'table:style-name' => 'ro1'))
       end
       row = rows[row-1]
       col = ('A'..col.to_s).to_a.index(col.to_s)
-      cols = row.xpath('table:table-cell').to_a
+      cols = row.cols
       (col - cols.length + 1).times do
-        cols.push row.add_element('table:table-cell', 'office:value-type' => 'string')
+        cols.push row.create_cell
       end
-      Cell.new(cols[col])
+      cols[col]
     end
 
     def rows
-      @content.xpath('./table:table-row').map{|row| Row.new(row)}
+      @rows ||= @content.xpath('./table:table-row').map{|row| Row.new(row)}
     end
 
     def column
@@ -164,9 +164,21 @@ class Ods
     def initialize(content)
       @content = content
     end
+
+    def cols
+      @cols ||= xpath('table:table-cell').map{|cell| Cell.new(cell)}
+    end
+
+    def create_cell
+      Cell.new(@content.add_element('table:table-cell', 'office:value-type' => 'string'))
+    end
   end
 
   class Cell
+    extend Forwardable
+
+    def_delegator :@content, :fetch, :fetch
+
     def initialize(content)
       @content = content
     end
@@ -185,11 +197,6 @@ class Ods
 
     def annotation=(value)
       fetch('office:annotation/text:p').content = value
-    end
-
-    private
-    def fetch(xpath)
-      @content.fetch(xpath)
     end
   end
 
