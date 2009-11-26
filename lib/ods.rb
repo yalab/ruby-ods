@@ -16,6 +16,18 @@ Nokogiri::XML::Element.module_eval do
     self.add_child(node)
     node
   end
+
+  def fetch(xpath)
+    if node = self.xpath(xpath).first
+      return node
+    end
+
+    return self.add_element(xpath) unless xpath.include?('/')
+
+    xpath = xpath.split('/')
+    last_path = xpath.pop
+    fetch(xpath.join('/')).fetch(last_path)
+  end
 end
 
 class Ods
@@ -143,7 +155,13 @@ class Ods
     end
 
     def annotation
-      @content.xpath('office:annotation/text:p').first.content
+      node = @content.xpath('office:annotation/text:p').first
+      (node) ? node.content : ''
+    end
+
+    def annotation=(value)
+      node = @content.fetch('office:annotation/text:p')
+      node.content = value
     end
   end
 end

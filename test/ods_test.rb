@@ -65,4 +65,15 @@ class OdsTest < Test::Unit::TestCase
     cell = @ods.sheets[0][2, :A]
     assert_equal '昆布だし', cell.annotation
   end
+
+  def test_write_annotation
+    sheet_offset = 0
+    row = 3
+    col = :A
+    cell = @ods.sheets[sheet_offset][row, col]
+    assert_equal '', cell.annotation
+    text = 'foobar'
+    cell.annotation = text
+    assert_equal text, @ods.sheets[sheet_offset][row, col].annotation
+  end
 end
