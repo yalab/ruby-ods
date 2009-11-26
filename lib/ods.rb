@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'forwardable'
 require 'rubygems'
 require 'nokogiri'
 require 'zip/zip'
@@ -132,7 +133,6 @@ class Ods
     end
 
     def [](row, col)
-      rows = @content.xpath('./table:table-row').to_a
       (row - rows.length).times do
         rows.push @content.add_element('table:table-row',
                                        'table:style-name' => 'ro1')
@@ -146,8 +146,23 @@ class Ods
       Cell.new(cols[col])
     end
 
+    def rows
+      @content.xpath('./table:table-row').map{|row| Row.new(row)}
+    end
+
     def column
       Column.new(@content.xpath('table:table-column').first)
+    end
+  end
+
+  class Row
+    extend Forwardable
+
+    def_delegator :@content, :xpath, :xpath
+    def_delegator :@content, :add_element, :add_element
+
+    def initialize(content)
+      @content = content
     end
   end
 

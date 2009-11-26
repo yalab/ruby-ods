@@ -88,4 +88,17 @@ class OdsTest < Test::Unit::TestCase
     sheet = modified_ods.sheets[modified_ods.sheets.length-1]
     assert_equal "3", sheet.column.attr('repeated')
   end
+
+  def test_each_rows
+    sheet = @ods.create_sheet
+    rows = 10
+    cols = :A
+    sheet[rows, cols].text = 'foo'
+
+    count = 0
+    sheet.rows.each do |row|
+      count += 1
+    end
+    assert_equal rows, count
+  end
 end
