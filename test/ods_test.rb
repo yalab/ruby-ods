@@ -108,4 +108,16 @@ class OdsTest < Test::Unit::TestCase
     assert_instance_of Ods::Cell, sheet.rows[row_offset-1].cols[0]
     assert_equal ('A'..col_offset.to_s).to_a.length, count
   end
+
+  def test_row_no
+    sheet = @ods.sheets[0]
+    count = 0
+    sheet.rows.each_with_index do |row, index|
+      assert_equal index + 1, row.no
+      count += 1
+    end
+
+    sheet[count+1, :A].value = 'hoge'
+    assert_equal count+1, sheet.rows.last.no
+  end
 end

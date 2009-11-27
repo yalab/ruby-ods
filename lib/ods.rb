@@ -108,8 +108,8 @@ class Ods
 
     def [](row, col)
       (row - rows.length).times do
-        rows.push Row.new(@content.add_element('table:table-row',
-                                               'table:style-name' => 'ro1'))
+        rows.push(Row.new(@content.add_element('table:table-row',
+                                               'table:style-name' => 'ro1'), rows.length+1))
       end
       row = rows[row-1]
       col = ('A'..col.to_s).to_a.index(col.to_s)
@@ -121,7 +121,12 @@ class Ods
     end
 
     def rows
-      @rows ||= @content.xpath('./table:table-row').map{|row| Row.new(row)}
+      return @rows if @rows
+      @rows = []
+      @content.xpath('./table:table-row').each_with_index{|row, index|
+        @rows << Row.new(row, index+1)
+      }
+      @rows
     end
 
     def column
@@ -134,9 +139,11 @@ class Ods
 
     def_delegator :@content, :xpath, :xpath
     def_delegator :@content, :add_element, :add_element
+    attr_reader :no
 
-    def initialize(content)
+    def initialize(content, no)
       @content = content
+      @no = no
     end
 
     def cols
