@@ -115,7 +115,8 @@ class Ods
       col = ('A'..col.to_s).to_a.index(col.to_s)
       cols = row.cols
       (col - cols.length + 1).times do
-        cols.push row.create_cell
+        no = (cols.last) ? cols.last.no.to_s.succ : 'A'
+        cols.push(Cell.new(row.add_element('table:table-cell', 'office:value-type' => 'string'), no))
       end
       cols[col]
     end
@@ -147,11 +148,18 @@ class Ods
     end
 
     def cols
-      @cols ||= xpath('table:table-cell').map{|cell| Cell.new(cell)}
+      return @cols if @cols
+      @cols = []
+      no = 'A'
+      xpath('table:table-cell').each{|cell|
+        @cols << Cell.new(cell, no)
+        no.succ!
+      }
+      @cols
     end
 
     def create_cell
-      Cell.new(@content.add_element('table:table-cell', 'office:value-type' => 'string'))
+
     end
   end
 
@@ -159,9 +167,11 @@ class Ods
     extend Forwardable
 
     def_delegator :@content, :fetch, :fetch
+    attr_reader :no
 
-    def initialize(content)
+    def initialize(content, no)
       @content = content
+      @no = no.to_sym
     end
 
     def value

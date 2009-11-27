@@ -120,4 +120,13 @@ class OdsTest < Test::Unit::TestCase
     sheet[count+1, :A].value = 'hoge'
     assert_equal count+1, sheet.rows.last.no
   end
+
+  def test_cell_no
+    sheet = @ods.create_sheet
+    sheet[1, :A].value = 'hoge'
+    sheet[2, :B].value = 'foo'
+    assert_equal :A, sheet.rows.first.cols.first.no
+    assert_equal :A, sheet.rows.first.cols.last.no
+    assert_equal :B, sheet.rows.last.cols.last.no
+  end
 end
