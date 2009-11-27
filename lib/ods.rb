@@ -111,7 +111,6 @@ class Ods
                                'print'      => 'false')
     table.add_element('table:table-column',
                       'style-name'              => 'co1',
-                      'number-columns-repeated' => '1',
                       'default-cell-style-name' => 'Default')
     new_sheet = Sheet.new(table)
     @sheets.push(new_sheet)
@@ -211,7 +210,7 @@ class Ods
     end
 
     def set_attr(name, value)
-      @content['number-columns-' + name] = value.to_s
+      @content['table:number-columns-' + name] = value.to_s
     end
   end
 end
