@@ -2,7 +2,7 @@
 require 'forwardable'
 require 'rubygems'
 require 'nokogiri'
-require 'lib/nokogiri_ext'
+require 'nokogiri_ext'
 require 'zip/zip'
 require 'fileutils'
 
