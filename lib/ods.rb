@@ -152,8 +152,12 @@ class Ods
       @cols = []
       no = 'A'
       xpath('table:table-cell').each{|cell|
-        @cols << Cell.new(cell, no)
-        no.succ!
+        repeated = cell.attributes['number-columns-repeated']
+        count = (repeated && repeated.value.to_i) || 1
+        1.upto(count) do
+          @cols << Cell.new(cell, no)
+          no.succ!
+        end
       }
       @cols
     end
